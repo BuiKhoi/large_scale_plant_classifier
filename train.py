@@ -1,5 +1,5 @@
 from config import get_config
-from Learner import face_learner
+from learner import face_learner
 import argparse
 
 # python train.py -net mobilefacenet -b 200 -w 4
