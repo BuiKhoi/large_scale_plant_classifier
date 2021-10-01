@@ -1,3 +1,4 @@
+from pathlib import Path
 from config import get_config
 from learner import face_learner
 import argparse
@@ -12,7 +13,8 @@ if __name__ == '__main__':
     parser.add_argument('-lr','--lr',help='learning rate',default=1e-3, type=float)
     parser.add_argument("-b", "--batch_size", help="batch_size", default=96, type=int)
     parser.add_argument("-w", "--num_workers", help="workers number", default=3, type=int)
-    parser.add_argument("-d", "--data_mode", help="use which database, [vgg, ms1m, emore, concat]",default='emore', type=str)
+    parser.add_argument("-d", "--data_path", help="Path to training dataset", required=True)
+    parser.add_argument("-v", "--val_path", help="Path to validation dataset", required=True)
     args = parser.parse_args()
 
     conf = get_config()
@@ -26,7 +28,8 @@ if __name__ == '__main__':
     conf.lr = args.lr
     conf.batch_size = args.batch_size
     conf.num_workers = args.num_workers
-    conf.data_mode = args.data_mode
+    conf.data_path = args.data_path
+    conf.val_path = Path(args.val_path)
     learner = face_learner(conf)
 
     learner.train(conf, args.epochs)

@@ -55,7 +55,7 @@ class face_learner(object):
             self.board_loss_every = len(self.loader)//100
             self.evaluate_every = len(self.loader)//10
             self.save_every = len(self.loader)//5
-            self.val_data, self.val_issame = get_val_data(Path("/content/training_data/"))
+            self.val_data, self.val_issame = get_val_data(conf.val_path)
         else:
             self.threshold = conf.threshold
     

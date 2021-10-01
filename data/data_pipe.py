@@ -26,25 +26,8 @@ def get_train_dataset(imgs_folder):
     return ds, class_num
 
 def get_train_loader(conf):
-    if conf.data_mode in ['ms1m', 'concat']:
-        ms1m_ds, ms1m_class_num = get_train_dataset(Path("/content/training_data/Flower"))
-        print('ms1m loader generated')
-    if conf.data_mode in ['vgg', 'concat']:
-        vgg_ds, vgg_class_num = get_train_dataset(conf.vgg_folder/'imgs')
-        print('vgg loader generated')        
-    if conf.data_mode == 'vgg':
-        ds = vgg_ds
-        class_num = vgg_class_num
-    elif conf.data_mode == 'ms1m':
-        ds = ms1m_ds
-        class_num = ms1m_class_num
-    elif conf.data_mode == 'concat':
-        for i,(url,label) in enumerate(vgg_ds.imgs):
-            vgg_ds.imgs[i] = (url, label + ms1m_class_num)
-        ds = ConcatDataset([ms1m_ds,vgg_ds])
-        class_num = vgg_class_num + ms1m_class_num
-    elif conf.data_mode == 'emore':
-        ds, class_num = get_train_dataset(conf.emore_folder/'imgs')
+    ds, class_num = get_train_dataset(conf.data_path)
+    print('Data loader generated')
     loader = DataLoader(ds, batch_size=conf.batch_size, shuffle=True, pin_memory=conf.pin_memory, num_workers=conf.num_workers)
     return loader, class_num 
     
@@ -57,16 +40,6 @@ def load_bin(path, rootdir, transform, image_size=[112,112]):
         _bin = bins[i]
         img = mx.image.imdecode(_bin).asnumpy()
         img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
-        # if i == 0:
-        #   cv2.imwrite("/content/test_lfw/0.jpg", img)
-        # elif i == 1:
-        #   cv2.imwrite("/content/test_lfw/1.jpg", img)
-        # elif i == 2:
-        #   cv2.imwrite("/content/test_lfw/2.jpg", img)
-        # elif i == 3:
-        #   cv2.imwrite("/content/test_lfw/3.jpg", img)
-        # else:
-        #   return
         img = Image.fromarray(img.astype(np.uint8))
         data[i, ...] = transform(img)
         i += 1
@@ -81,9 +54,6 @@ def make_bin(images, issame, rootdir, transform, image_size=[112,112]):
         rootdir.mkdir()
     data = bcolz.fill([len(images), 3, image_size[0], image_size[1]], dtype=np.float32, rootdir=rootdir, mode='w')
     for i in range(len(images)):
-        # _bin = bins[i]
-        # img = mx.image.imdecode(_bin).asnumpy()
-        # img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
         img = cv2.imread(str(images[i]))
         img = Image.fromarray(img.astype(np.uint8))
         data[i, ...] = transform(img)
@@ -94,13 +64,14 @@ def make_bin(images, issame, rootdir, transform, image_size=[112,112]):
     np.save(str(rootdir)+'_list', np.array(issame))
     return data, issame
 
-def get_val_pair(path, name):
-    carray = bcolz.carray(rootdir = path/name, mode='r')
-    issame = np.load(path/'{}_list.npy'.format(name))
+def get_val_pair(path):
+    name = path.name
+    carray = bcolz.carray(rootdir = path, mode='r')
+    issame = np.load(path.parent/'{}_list.npy'.format(name))
     return carray, issame
 
 def get_val_data(data_path):
-    val_data, val_issame = get_val_pair(data_path, "val")
+    val_data, val_issame = get_val_pair(data_path)
     return val_data, val_issame
 
 def load_mx_rec(rec_path):
@@ -120,29 +91,3 @@ def load_mx_rec(rec_path):
         if not label_path.exists():
             label_path.mkdir()
         img.save(label_path/'{}.jpg'.format(idx), quality=95)
-
-# class train_dataset(Dataset):
-#     def __init__(self, imgs_bcolz, label_bcolz, h_flip=True):
-#         self.imgs = bcolz.carray(rootdir = imgs_bcolz)
-#         self.labels = bcolz.carray(rootdir = label_bcolz)
-#         self.h_flip = h_flip
-#         self.length = len(self.imgs) - 1
-#         if h_flip:
-#             self.transform = trans.Compose([
-#                 trans.ToPILImage(),
-#                 trans.RandomHorizontalFlip(),
-#                 trans.ToTensor(),
-#                 trans.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])
-#             ])
-#         self.class_num = self.labels[-1] + 1
-        
-#     def __len__(self):
-#         return self.length
-    
-#     def __getitem__(self, index):
-#         img = torch.tensor(self.imgs[index+1], dtype=torch.float)
-#         label = torch.tensor(self.labels[index+1], dtype=torch.long)
-#         if self.h_flip:
-#             img = de_preprocess(img)
-#             img = self.transform(img)
-#         return img, label

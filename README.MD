@@ -45,7 +45,7 @@ python prepare_data.py -h
 
 To run the prepare script:
 ```bash
-!python prepare_data.py --dataset_dir /content/training_data/Flower --min_set_size 3 \
+python prepare_data.py --dataset_dir /content/training_data/Flower --min_set_size 3 \
     --resize --make_val_data --val_dir /content/training_data/val/
 ```
 
