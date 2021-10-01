@@ -54,8 +54,8 @@ class face_learner(object):
 
             print('optimizers generated')    
             self.board_loss_every = len(self.loader)//100
-            self.evaluate_every = len(self.loader)//2
-            self.save_every = len(self.loader)//1
+            self.evaluate_every = len(self.loader)//3
+            self.save_every = len(self.loader)//3
             self.save_best_only = conf.save_best_only
             self.val_data, self.val_issame = get_val_data(conf.val_path)
         else:
@@ -84,7 +84,7 @@ class face_learner(object):
                 ss = str(ss)
                 i = ss.index("acc")
                 j = ss.index("_", i)
-                acc = int(ss[i+4:j])
+                acc = float(ss[i+4:j])
                 if acc < accuracy:
                     os.remove(ss)
     
