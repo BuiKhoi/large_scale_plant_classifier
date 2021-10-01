@@ -15,6 +15,7 @@ if __name__ == '__main__':
     parser.add_argument("-w", "--num_workers", help="workers number", default=3, type=int)
     parser.add_argument("-d", "--data_path", help="Path to training dataset", required=True)
     parser.add_argument("-v", "--val_path", help="Path to validation dataset", required=True)
+    parser.add_argument("-load", "--load_checkpoint", help="Load checkpoint", default="")
     args = parser.parse_args()
 
     conf = get_config()
@@ -31,5 +32,9 @@ if __name__ == '__main__':
     conf.data_path = args.data_path
     conf.val_path = Path(args.val_path)
     learner = face_learner(conf)
+
+    if args.load_checkpoint != "":
+        print("Loading checkpoint", args.load_checkpoint)
+        learner.load_state(conf, args.load_checkpoint)
 
     learner.train(conf, args.epochs)
