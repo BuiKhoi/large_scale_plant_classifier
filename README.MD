@@ -50,3 +50,20 @@ python prepare_data.py --dataset_dir /content/training_data/Flower --min_set_siz
 ```
 
 Now you should have your data prepared. And process to training phase
+
+# 2. Training model
+After preparing the data following the previous instructions, you can take a look at training options:
+```bash
+python train.py -h
+```
+
+You can start training with:
+```bash
+python train.py -net mobilefacenet -b 256 -w 4 -e 500 \
+    -d /content/training_data/Flower -v /content/training_data/val \
+    -load '2021-10-01-15-44_loss:39.85_step:205_None.pth'
+```
+
+Note: 
+* If you want to train from scratch, please remove the argument `-load`
+* Training loss and accuracy will be printed along the way of training, remember to take a look

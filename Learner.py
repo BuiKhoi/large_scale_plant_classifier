@@ -1,3 +1,4 @@
+import os
 from data.data_pipe import de_preprocess, get_train_loader, get_val_data
 from model import Backbone, Arcface, MobileFaceNet, Am_softmax, l2_norm
 from verifacation import evaluate
@@ -55,6 +56,7 @@ class face_learner(object):
             self.board_loss_every = len(self.loader)//100
             self.evaluate_every = len(self.loader)//2
             self.save_every = len(self.loader)//1
+            self.save_best_only = conf.save_best_only
             self.val_data, self.val_issame = get_val_data(conf.val_path)
         else:
             self.threshold = conf.threshold
@@ -64,16 +66,27 @@ class face_learner(object):
             save_path = conf.save_path
         else:
             save_path = conf.model_path
+        extra = ("_" + extra) if extra is not None else ""
         torch.save(
             self.model.state_dict(), save_path /
-            ('model_{}_loss:{}_step:{}_{}.pth'.format(get_time(), accuracy, self.step, extra)))
+            ('model_{}_acc:{}_step:{}{}.pth'.format(get_time(), accuracy, self.step, extra)))
         if not model_only:
             torch.save(
                 self.head.state_dict(), save_path /
-                ('head_{}_loss:{}_step:{}_{}.pth'.format(get_time(), accuracy, self.step, extra)))
+                ('head_{}_acc:{}_step:{}{}.pth'.format(get_time(), accuracy, self.step, extra)))
             torch.save(
                 self.optimizer.state_dict(), save_path /
-                ('optimizer_{}_loss:{}_step:{}_{}.pth'.format(get_time(), accuracy, self.step, extra)))
+                ('optimizer_{}_acc:{}_step:{}{}.pth'.format(get_time(), accuracy, self.step, extra)))
+
+        if self.save_best_only and extra == "":
+            saved_stuff = save_path.glob("*.pth")
+            for ss in saved_stuff:
+                ss = str(ss)
+                i = ss.index("acc")
+                j = ss.index("_", i)
+                acc = int(ss[i+4:j])
+                if acc < accuracy:
+                    os.remove(ss)
     
     def load_state(self, conf, fixed_str, from_save_folder=False, model_only=False):
         if from_save_folder:
@@ -223,7 +236,7 @@ class face_learner(object):
                     
                 self.step += 1
                 
-        self.save_state(conf, loss_board, to_save_folder=True, extra='final')
+        self.save_state(conf, round(accuracy, 2), to_save_folder=True, extra='final')
 
     def schedule_lr(self):
         for params in self.optimizer.param_groups:                 

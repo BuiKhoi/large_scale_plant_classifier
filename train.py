@@ -16,6 +16,7 @@ if __name__ == '__main__':
     parser.add_argument("-d", "--data_path", help="Path to training dataset", required=True)
     parser.add_argument("-v", "--val_path", help="Path to validation dataset", required=True)
     parser.add_argument("-load", "--load_checkpoint", help="Load checkpoint", default="")
+    parser.add_argument("-best", "--save_best_only", help="The name says it all", action="store_true")
     args = parser.parse_args()
 
     conf = get_config()
@@ -31,6 +32,7 @@ if __name__ == '__main__':
     conf.num_workers = args.num_workers
     conf.data_path = args.data_path
     conf.val_path = Path(args.val_path)
+    conf.save_best_only = args.save_best_only
     learner = face_learner(conf)
 
     if args.load_checkpoint != "":
