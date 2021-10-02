@@ -50,7 +50,7 @@ class face_learner(object):
                                     {'params': paras_only_bn}
                                 ], lr = conf.lr, momentum = conf.momentum)
             print(self.optimizer)
-#             self.scheduler = optim.lr_scheduler.ReduceLROnPlateau(self.optimizer, patience=40, verbose=True)
+            self.scheduler = optim.lr_scheduler.ReduceLROnPlateau(self.optimizer, patience=10, verbose=True)
 
             print('optimizers generated')    
             self.board_loss_every = len(self.loader)//100
@@ -233,6 +233,7 @@ class face_learner(object):
                 if self.step % self.save_every == 0 and self.step != 0:
                     self.save_state(conf, round(accuracy, 2))
                     tqdm.write(f"Loss: {round(loss_board, 4)}\tAccuracy: {round(accuracy, 2)}")
+                    self.scheduler.step(loss_board)
                     
                 self.step += 1
                 
