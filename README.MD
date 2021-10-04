@@ -67,3 +67,18 @@ python train.py -net mobilefacenet -b 256 -w 4 -e 500 \
 Note: 
 * If you want to train from scratch, please remove the argument `-load`
 * Training loss and accuracy will be printed along the way of training, remember to take a look
+
+## 2.1 Modify training size
+The default training image size is `112x112`, if you want to change it, just simply change the size when running `python prepare_data.py ...` process, but then, when you run training, you should have an error looks like:
+```
+RuntimeError: Function MmBackward returned an invalid gradient at index 0 - got [4, 512] but expected shape compatible with [4, 247808]
+```
+
+This is because when you change the image size, it should affect the flatten function, to solve this, head to `model.py`, and change line 209, which will look like this:
+```
+208|    self.conv_6_flatten = Flatten()
+209|    self.linear = Linear(512, embedding_size, bias=False)
+210|    self.bn = BatchNorm1d(embedding_size)
+```
+You can change the `512` number to `247808`, which our model requires.
+And then start training again, the code should be working smoothly. Remember whenever you change image size, you will have to modify this number

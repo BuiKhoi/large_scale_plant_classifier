@@ -51,8 +51,7 @@ def main(args):
 
     print("Filtering classes")
     removed_classes = 0
-    if args.resize:
-        new_size = [int(s) for s in args.image_size.replace(" ", "").split(",")]
+    new_size = [int(s) for s in args.image_size.replace(" ", "").split(",")]
     for dc in tqdm(data_classes):
         child_images = list(dc.glob(f"*.{args.image_suffix}"))
         if len(child_images) < args.min_set_size:
@@ -105,7 +104,7 @@ def main(args):
         rec_path = Path(args.val_dir)
         
         images_paths, issame = process_pairs("./data/pairs.txt")
-        make_bin(images_paths, issame, rec_path, conf.test_transform)
+        make_bin(images_paths, issame, rec_path, conf.test_transform, new_size)
 
         if args.remove_val_image:
             for img_path in images_paths:
