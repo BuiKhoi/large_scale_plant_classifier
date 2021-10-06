@@ -244,15 +244,15 @@ class face_learner(object):
             params['lr'] /= 10
         print(self.optimizer)
     
-    def infer(self, conf, faces, target_embs, tta=False):
+    def infer(self, conf, images, target_embs, tta=False):
         '''
-        faces : list of PIL Image
-        target_embs : [n, 512] computed embeddings of faces in facebank
-        names : recorded names of faces in facebank
+        images : list of PIL Image
+        target_embs : [n, 512] computed embeddings of spieces in databank
+        names : recorded names of spieces in databank
         tta : test time augmentation (hfilp, that's all)
         '''
         embs = []
-        for img in faces:
+        for img in images:
             if tta:
                 mirror = trans.functional.hflip(img)
                 emb = self.model(conf.test_transform(img).to(conf.device).unsqueeze(0))
