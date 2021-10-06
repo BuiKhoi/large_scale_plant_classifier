@@ -82,3 +82,19 @@ This is because when you change the image size, it should affect the flatten fun
 ```
 You can change the `512` number to `247808`, which our model requires.
 And then start training again, the code should be working smoothly. Remember whenever you change image size, you will have to modify this number
+
+
+# 3. Make serving model
+For the best inference with this model, we should convert the model to tensorflow serving format, which will allow us to use [gRPC](https://grpc.io/) to inference model.
+To do so, run:
+```bash
+python make_serving_model.py --model_file /path/to/trained/model/file
+```
+
+You can checkout options for making serving model with:
+```bash
+python make_serving_model.py -h
+```
+Now you should have your serving model ready, follow the steps to [Examine and deploy serving model](https://www.tensorflow.org/tfx/tutorials/serving/rest_simple#examine_your_saved_model)
+
+Note: Tensorflow serving model running on docker is highly recommended
