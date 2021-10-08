@@ -17,10 +17,10 @@ def arguments():
     parser.add_argument("--save_path", required=True, help="Path to save folder")
     parser.add_argument("--dataset_name", required=True, help="Name of your dataset")
 
-    return parser.parse_args
+    return parser.parse_args()
 
 
-def main():
+def main(args):
     print("Loading model")
     conf = get_config()
     model = MobileFaceNet(conf.embedding_size)

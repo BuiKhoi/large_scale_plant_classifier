@@ -12,9 +12,9 @@ def arguments():
     parser = ArgumentParser()
 
     parser.add_argument("--model_file", help="Path to your model file", default="")
-    parser.add_argument("--mode", help="(best|last) Mode to find your model if model file is not specified")
+    parser.add_argument("--mode", help="(best|last) Mode to find your model if model file is not specified", default="best")
     parser.add_argument("--image_size", help="Size of images to be predicted by your model", default="224,224")
-    parser.add_argument("--save_folder", help="Path to folder to save the transfered model", default="workspace/extracted/")
+    parser.add_argument("--save_folder", help="Path to folder to save the transfered model", default="work_space/extracted/")
     parser.add_argument("--model_name", help="Name of your model", default="plant_classifier")
 
     return parser.parse_args()
@@ -42,7 +42,7 @@ def find_model_file(folder, mode):
         for ss in model_names:
             i = ss.index("step:")
             j = ss.index(".", i)
-            step = float(ss[i+6:j])
+            step = int(ss[i+5:j])
             if step > overall_step:
                 overall_step = step
                 selected_model = ss
