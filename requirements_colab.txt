@@ -1,3 +1,5 @@
 bcolz==1.2.1
 mxnet-cu110
 tensorboardX==2.4
+onnx==1.10.1
+onnx-tf==1.9.0

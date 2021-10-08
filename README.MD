@@ -69,18 +69,18 @@ Note:
 * Training loss and accuracy will be printed along the way of training, remember to take a look
 
 ## 2.1 Modify training size
-The default training image size is `112x112`, if you want to change it, just simply change the size when running `python prepare_data.py ...` process, but then, when you run training, you should have an error looks like:
+The default training image size is `224x224`, if you want to change it, just simply change the size when running `python prepare_data.py ...` process, but then, when you run training, you should have an error looks like:
 ```
-RuntimeError: Function MmBackward returned an invalid gradient at index 0 - got [4, 512] but expected shape compatible with [4, 247808]
+RuntimeError: Function MmBackward returned an invalid gradient at index 0 - got [4, 32768] but expected shape compatible with [4, 247808]
 ```
 
 This is because when you change the image size, it should affect the flatten function, to solve this, head to `model.py`, and change line 209, which will look like this:
 ```
 208|    self.conv_6_flatten = Flatten()
-209|    self.linear = Linear(512, embedding_size, bias=False)
+209|    self.linear = Linear(32768, embedding_size, bias=False)
 210|    self.bn = BatchNorm1d(embedding_size)
 ```
-You can change the `512` number to `247808`, which our model requires.
+You can change the `32768` number to `247808`, which our model requires.
 And then start training again, the code should be working smoothly. Remember whenever you change image size, you will have to modify this number
 
 
@@ -98,3 +98,12 @@ python make_serving_model.py -h
 Now you should have your serving model ready, follow the steps to [Examine and deploy serving model](https://www.tensorflow.org/tfx/tutorials/serving/rest_simple#examine_your_saved_model)
 
 Note: Tensorflow serving model running on docker is highly recommended
+
+# 4. Make databank
+For the final process, we will find image embedding in the databank of embeddings, which means we have to calculate them first, to do so, run:
+```bash
+python make_databank.py --model_path path/to/your/model --data_path path/to/data/folder
+    --save_path path/to/save/folder --dataset_name plant_entire
+```
+
+You should have a folder containing embedding for individual images, and a `.npz` file with all these images compressed for ease of use

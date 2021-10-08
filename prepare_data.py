@@ -13,7 +13,7 @@ def arguments():
     parser.add_argument("--dataset_dir", help="Path to dataset folder")
     parser.add_argument("--min_set_size", help="Minimum image count for each class", default=3, type=int)
     parser.add_argument("--resize", help="Resize images for training", action="store_true")
-    parser.add_argument("--image_size", help="Resize images to this size", default="112, 112")
+    parser.add_argument("--image_size", help="Resize images to this size", default="224, 224")
     parser.add_argument("--make_val_data", help="Also create validation data from this dataset", action="store_true")
     parser.add_argument("--val_dir", help="Path to save validation data")
     parser.add_argument("--val_size", help="Number of validation images of each type (same, not same)", default=300)
