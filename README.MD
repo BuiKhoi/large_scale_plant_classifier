@@ -107,3 +107,14 @@ python make_databank.py --model_path path/to/your/model --data_path path/to/data
 ```
 
 You should have a folder containing embedding for individual images, and a `.npz` file with all these images compressed for ease of use
+
+# 5. Inference
+After creating the databank, you should be able to run inference on your images, first, prepare your test dataset with the structer
+being the same as `1. Data preparation` section, then run:
+```bash
+python infer_on_image.py --model_path path/to/your/model \
+    --images_path path/to/your/test/dataset/ \
+    --databank path/to/your/databank
+```
+
+It should show you the files and the predicted classes.
