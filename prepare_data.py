@@ -17,7 +17,7 @@ def arguments():
     parser.add_argument("--make_val_data", help="Also create validation data from this dataset", action="store_true")
     parser.add_argument("--val_dir", help="Path to save validation data")
     parser.add_argument("--val_size", help="Number of validation images of each type (same, not same)", default=300)
-    parser.add_argument("--remove_val_image", help="Remove val images after creating validation data")
+    parser.add_argument("--remove_val_image", help="Remove val images after creating validation data", action="store_true")
     parser.add_argument("--image_suffix", help="Suffix of images in dataset", default="jpg")
 
     return parser.parse_args()
@@ -108,7 +108,10 @@ def main(args):
 
         if args.remove_val_image:
             for img_path in images_paths:
-                os.remove(str(img_path))
+                try:
+                    os.remove(str(img_path))
+                except FileNotFoundError:
+                    pass
         
     print("Done. Bye")
 
