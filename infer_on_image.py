@@ -19,13 +19,15 @@ def arguments():
 
 def main(args):
     images_path = Path(args.images_path)
-    databank = np.load(args.databank)
+    databank = np.load(args.databank, allow_pickle=True)
     embeddings = databank["embeddings"]
+    embeddings = np.squeeze(embeddings, 1)
     labels = databank["labels"]
 
-    conf = get_config()
+    conf = get_config(False)
+    conf.use_mobilfacenet = True
     inferer = face_learner(conf, True)
-    inferer.load_state(conf, args.model_path, False, True)
+    inferer.load_state(conf, args.model_path, False, True, absolute=True)
 
     files = list(images_path.rglob("*.jpg"))
     images = [Image.open(str(img)) for img in files]
@@ -34,3 +36,8 @@ def main(args):
     for idx, f in zip(min_idx, files):
         parts = f.parts
         print(f"Spiece: {parts[-2]}, File: {parts[-1]}, Predicted: {labels[idx]}")
+
+
+if __name__ == "__main__":
+    args = arguments()
+    main(args)

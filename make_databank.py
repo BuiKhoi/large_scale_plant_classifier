@@ -44,9 +44,11 @@ def main(args):
             save_img_path = save_folder / context / parts[-2] / di.stem
             if not save_img_path.parent.exists():
                 save_img_path.parent.mkdir(parents=True)
-            np.save(str(save_img_path), embd.cpu())
-            embds.append(embd)
-            labels.append(di.stem)
+            embedding = embd.cpu().numpy()
+            np.save(str(save_img_path), embedding)
+            embds.append(embedding)
+            labels.append(parts[-2])
+        embds = np.array(embds)
         np.savez_compressed(str(save_folder/"databank"), embeddings=embds, labels=labels)
     
     print("Done. Bye")

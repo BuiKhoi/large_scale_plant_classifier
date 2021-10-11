@@ -88,12 +88,17 @@ class face_learner(object):
                 if acc < accuracy:
                     os.remove(ss)
     
-    def load_state(self, conf, fixed_str, from_save_folder=False, model_only=False):
+    def load_state(self, conf, fixed_str, from_save_folder=False, model_only=False, absolute=False):
         if from_save_folder:
             save_path = conf.save_path
         else:
-            save_path = conf.model_path            
-        self.model.load_state_dict(torch.load(save_path/'model_{}'.format(fixed_str)))
+            save_path = conf.model_path
+
+        if absolute:          
+            self.model.load_state_dict(torch.load(fixed_str))
+        else:
+            self.model.load_state_dict(torch.load(save_path/'model_{}'.format(fixed_str)))
+        
         if not model_only:
             self.head.load_state_dict(torch.load(save_path/'head_{}'.format(fixed_str)))
             self.optimizer.load_state_dict(torch.load(save_path/'optimizer_{}'.format(fixed_str)))
@@ -251,6 +256,7 @@ class face_learner(object):
         names : recorded names of spieces in databank
         tta : test time augmentation (hfilp, that's all)
         '''
+        self.model.eval()
         embs = []
         for img in images:
             if tta:
@@ -261,7 +267,9 @@ class face_learner(object):
             else:                        
                 embs.append(self.model(conf.test_transform(img).to(conf.device).unsqueeze(0)))
         source_embs = torch.cat(embs)
-        
+
+        target_embs = torch.tensor(target_embs).to(conf.device)
+
         diff = source_embs.unsqueeze(-1) - target_embs.transpose(1,0).unsqueeze(0)
         dist = torch.sum(torch.pow(diff, 2), dim=1)
         minimum, min_idx = torch.min(dist, dim=1)
