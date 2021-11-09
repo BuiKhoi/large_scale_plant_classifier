@@ -1,3 +1,4 @@
+from tqdm import tqdm
 from pathlib import Path
 from PIL import Image
 import numpy as np
@@ -31,7 +32,16 @@ def main(args):
 
     files = list(images_path.rglob("*.jpg"))
     images = [Image.open(str(img)) for img in files]
-    min_idx, _ = inferer.infer(conf, images, embeddings, True)
+    min_idx = []
+    pred_images = []
+    for img in tqdm(images):
+        pred_images.append(img)
+        if len(pred_images) == 15:
+            min_pred, _ = inferer.infer(conf, pred_images, embeddings, True)
+            min_idx.extend(min_pred)
+            pred_images = []
+    min_pred, _ = inferer.infer(conf, pred_images, embeddings, True)
+    min_idx.extend(min_pred)
 
     for idx, f in zip(min_idx, files):
         parts = f.parts
