@@ -41,13 +41,13 @@ def main(args):
             img = Image.open(str(di))
             embd = model(conf.test_transform(img).to(conf.device).unsqueeze(0))
             parts = di.parts
-            save_img_path = save_folder / context / parts[-2] / di.stem
-            if not save_img_path.parent.exists():
-                save_img_path.parent.mkdir(parents=True)
+            # save_img_path = save_folder / context / parts[-2] / di.stem
+            # if not save_img_path.parent.exists():
+            #     save_img_path.parent.mkdir(parents=True)
             embedding = embd.cpu().numpy()
-            np.save(str(save_img_path), embedding)
+            # np.save(str(save_img_path), embedding)
             embds.append(embedding)
-            labels.append(parts[-2])
+            labels.append([parts[-2], di.name])
         embds = np.array(embds)
         np.savez_compressed(str(save_folder/"databank"), embeddings=embds, labels=labels)
     

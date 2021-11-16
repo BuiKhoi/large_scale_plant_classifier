@@ -118,3 +118,15 @@ python infer_on_image.py --model_path path/to/your/model \
 ```
 
 It should show you the files and the predicted classes.
+
+# 6. Evaluate
+To evaluate classes classification, you can run evaluation code:
+```bash
+python evaluate.py --model_path path/to/your/model \
+    --images_path path/to/your/test/dataset/
+    --databank path/to/your/databank
+```
+
+You will have evaluation result for your own dataset.
+
+You can download sample evaluate dataset from [Google Drive](https://drive.google.com/drive/folders/1Z_Hp7mSg9rVvqqZ7MkCe6UK6O8ZILqUz?usp=sharing) to test evaluation.
