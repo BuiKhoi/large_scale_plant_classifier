@@ -69,14 +69,14 @@ class face_learner(object):
         extra = ("_" + extra) if extra is not None else ""
         torch.save(
             self.model.state_dict(), save_path /
-            ('model_{}_acc:{}_step:{}{}.pth'.format(get_time(), accuracy, self.step, extra)))
+            ('model_{}_acc#{}_step#{}{}.pth'.format(get_time(), accuracy, self.step, extra)))
         if not model_only:
             torch.save(
                 self.head.state_dict(), save_path /
-                ('head_{}_acc:{}_step:{}{}.pth'.format(get_time(), accuracy, self.step, extra)))
+                ('head_{}_acc#{}_step#{}{}.pth'.format(get_time(), accuracy, self.step, extra)))
             torch.save(
                 self.optimizer.state_dict(), save_path /
-                ('optimizer_{}_acc:{}_step:{}{}.pth'.format(get_time(), accuracy, self.step, extra)))
+                ('optimizer_{}_acc#{}_step#{}{}.pth'.format(get_time(), accuracy, self.step, extra)))
 
         if self.save_best_only and extra == "":
             saved_stuff = save_path.glob("*.pth")
@@ -84,7 +84,7 @@ class face_learner(object):
                 ss = str(ss)
                 i = ss.index("acc")
                 j = ss.index("_", i)
-                acc = float(ss[i+4:j])
+                acc = float(ss[i+5:j])
                 if acc < accuracy:
                     os.remove(ss)
     

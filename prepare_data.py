@@ -44,6 +44,20 @@ def process_pairs(pairs_file):
     return images, issame
 
 
+def center_crop_image(im):
+    h, w, _ = im.shape
+    smaller_size = min(w, h)
+    new_size = int(smaller_size*0.8)
+
+    width_start = int((w-new_size)/2)
+    width_stop = (width_start + new_size)
+
+    height_start = int((h-new_size)/2)
+    height_stop = height_start + new_size
+
+    return im[height_start:height_stop, width_start:width_stop, :]
+
+
 def main(args):
     data_folder = Path(args.dataset_dir)
     data_classes = list(data_folder.glob("*"))
@@ -60,8 +74,11 @@ def main(args):
         elif args.resize:
             for ci in child_images:
                 im = cv2.imread(str(ci))
+                if im is None:
+                    os.remove(str(ci))
+                    continue
                 if im.shape != (*new_size, 3):
-                    im = cv2.resize(im, tuple(new_size))
+                    im = cv2.resize(center_crop_image(im), tuple(new_size))
                     cv2.imwrite(str(ci), im)
     
     print(f"\nRemoved {removed_classes} classes")
